@@ -1,3 +1,7 @@
+/* Economy and Combat Rebalance Mod */
+/* Main header file */
+/* author: phobos2077 */
+
 #ifndef PBS_MOD_H
 #define PBS_MOD_H
 
@@ -5,34 +9,42 @@
 #include "define_extra.h"
 #include "lib.misc.h"
 
-#define SGVAR_CRITTERS_SEE_DUDE		    ("PBSACSD_")
-#define SGVAR_TRAPS_BY_DUDE			    ("PBSTRPS_")
-#define SGVAR_TRAPS_BY_DUDE_LOCAL		("PBSTRPSL")
-#define SGVAR_TRAPS_LAST_MAP		    ("PBSTRPSM")
-#define SGVAR_TRAPS_LAST_ARMAMENT       ("PBSTRPAR")
-//#define SGVAR_TRAP_VICTIMS 			    ("PBSTRPVC")
+#define SGVAR_CRITTERS_SEE_DUDE		   ("PBSACSD_")
+#define SGVAR_TRAPS_BY_DUDE			   ("PBSTRPS_")
+#define SGVAR_TRAPS_BY_DUDE_LOCAL	 	("PBSTRPSL")
+#define SGVAR_TRAPS_LAST_MAP		      ("PBSTRPSM")
+#define SGVAR_TRAPS_LAST_ARMAMENT      ("PBSTRPAR")
+// #define SGVAR_TRAP_VICTIMS 			    ("PBSTRPVC")
 // #define SGVAR_TRAP_FAILED_PID	      ("PBSTRPSF")
 // #define SGVAR_FAKE_EXPLOSIONS   		("PBSEXPLO")
-#define SGVAR_ANGRY_TEAMS 			    ("PBSANGRY")
-#define SGVAR_LAST_DEATHANIM		    ("PBSLTDTA")
-#define SGVAR_LAST_DEATHANIM_CRITTER    ("PBSLTDTC")
-#define SGVAR_REMOVE_ITEM    ("PBSRMITM")
+#define SGVAR_ANGRY_TEAMS 			      ("PBSANGRY")
+#define SGVAR_LAST_DEATHANIM		      ("PBSLTDTA")
+#define SGVAR_LAST_DEATHANIM_CRITTER   ("PBSLTDTC")
+#define SGVAR_REMOVE_ITEM              ("PBSRMITM")
+// quests:
+#define SGVAR_BOUNTY_NUM_ROBBERS       ("PQST_ROB")
 
 // arrays
-#define ARR_PBS_GLOBALS    "phobos2077"
-#define ARR_TRAPS          "pbs_traps"
-#define ARR_ANGRY_TEAMS    "pbs_angry_teams"
+#define ARR_TRAPVARS             "pbs_trapvars"
+#define ARR_PBS_GLOBALS          "phobos2077"
+#define ARR_TRAPS                "pbs_traps"
+#define ARR_ANGRY_TEAMS          "pbs_angry_teams"
+#define ARR_TRAPS_LOCAL          "pbs_traps_local"
+#define ARR_TRAP_VICTIMS         "pbs_trap_victims"
+#define ARR_CRITTERS_SEE_DUDE    "pbs_see_dude"
 
 // normal global variables
 #define GVAR_BOUNTY_REDDING         (644)
 #define GVAR_BOUNTY_NCR             (645)
+#define GVAR_BRINGX_TENTACLES       (646)
+#define GVAR_BRINGX_HIDES           (647)
 
 // new items
 #define PID_PBS_50_AMMO	          	(610)
-#define PID_PBS_THROWING_AXE	    (611)
-#define PID_PBS_DRAGON_SKIN	      	(612)
-#define PID_PBS_HOMEMADE_GRENADE	(613)
-#define PID_PBS_SHOTGUN_SLUGS	    (614)
+#define PID_PBS_THROWING_AXE	      (611)
+#define PID_PBS_DRAGON_SKIN	      (612)
+#define PID_PBS_HOMEMADE_GRENADE	   (613)
+#define PID_PBS_SHOTGUN_SLUGS	      (614)
 #define PID_PBS_223_AP	          	(615)
 #define PID_PBS_TRAP_KIT_MINE      	(616)
 #define PID_PBS_TASER          		(617)
@@ -53,6 +65,13 @@
 #define PID_PBS_40MM_IC             (632)
 #define PID_PBS_14MM_JHP            (633)
 #define PID_PBS_MGL                 (634)
+#define PID_PBS_TRAPS_BOOK          (635)
+#define PID_PBS_BARTER_BOOK         (636)
+#define PID_PBS_BOOMERANG           (637)
+#define PID_PBS_SPIKED_SLEDGE       (638)
+#define PID_PBS_PISTON_SPEAR        (639)
+#define PID_PBS_DEATHCLAW_GAUNTLET  (640)
+#define PID_PBS_SHOTGUN_BUCKS       (641)
 
 // new scenery
 #define PID_PBS_SPIKE_TRAP_DISARMED	    (0x02000000 + 2301)
@@ -74,6 +93,7 @@
 #define is_in_array(item, array)    (scan_array(array, item) != -1)
 
 #define dude_skill(x)		(has_skill(dude_obj, x))
+#define dude_perk(x)       (has_trait(TRAIT_PERK,dude_obj,x))
 
 #define last_deathanim_critter      (get_sfall_global_int(SGVAR_LAST_DEATHANIM_CRITTER))
 #define last_deathanim              (get_sfall_global_int(SGVAR_LAST_DEATHANIM))
@@ -107,13 +127,14 @@
 #define can_steal_from_critter_pid(pid)         ((critter_flags_by_pid(pid) bwand CFLG_STEAL) == 0)
 #define critter_facing_dir(crit)                (has_trait(TRAIT_OBJECT,crit,OBJECT_CUR_ROT))
 
+#define is_critter(obj)		(obj_type(obj) == OBJ_TYPE_CRITTER)
 #define is_human(crit)		(critter_kill_type(crit) >= 0 and critter_kill_type(crit) <= 4)
 #define is_animal(crit)		(critter_kill_type(crit) == KILL_TYPE_brahmin_kills \
-				or critter_kill_type(crit) == KILL_TYPE_radscorpion_kills \
-				or critter_kill_type(crit) == KILL_TYPE_rat_kills \
-				or critter_kill_type(crit) == KILL_TYPE_dog_kills \
-				or critter_kill_type(crit) == KILL_TYPE_gecko_kills \
-				or critter_kill_type(crit) == KILL_TYPE_giant_ant_kills)
+                or critter_kill_type(crit) == KILL_TYPE_radscorpion_kills \
+                or critter_kill_type(crit) == KILL_TYPE_rat_kills \
+                or critter_kill_type(crit) == KILL_TYPE_dog_kills \
+                or critter_kill_type(crit) == KILL_TYPE_gecko_kills \
+                or critter_kill_type(crit) == KILL_TYPE_giant_ant_kills)
 #define is_deathclaw(crit)		(critter_kill_type(crit) == KILL_TYPE_deathclaw_kills)
 #define is_molerat(crit)	    (proto_data(obj_pid(crit), cr_fid) == 0x01000013 or proto_data(obj_pid(crit), cr_fid) == 0x0100004C)
 #define is_floater(crit)	    (critter_kill_type(crit) == KILL_TYPE_floater_kills)
@@ -124,37 +145,37 @@
         
         
 #define tile_is_stone(x)			((get_tile_fid(x) < 84) or  \
-									(get_tile_fid(x) > 116 and get_tile_fid(x) < 172) or   \
-									(get_tile_fid(x) > 235 and get_tile_fid(x) < 275) or   \
-									(get_tile_fid(x) > 506 and get_tile_fid(x) < 715) or   \
-									(get_tile_fid(x) > 812 and get_tile_fid(x) < 1053) or   \
-									(get_tile_fid(x) > 1927 and get_tile_fid(x) < 2093) or   \
-									(get_tile_fid(x) > 2115 and get_tile_fid(x) < 2289) or   \
-									(get_tile_fid(x) > 2516 and get_tile_fid(x) < 2529))
+                                    (get_tile_fid(x) > 116 and get_tile_fid(x) < 172) or   \
+                                    (get_tile_fid(x) > 235 and get_tile_fid(x) < 275) or   \
+                                    (get_tile_fid(x) > 506 and get_tile_fid(x) < 715) or   \
+                                    (get_tile_fid(x) > 812 and get_tile_fid(x) < 1053) or   \
+                                    (get_tile_fid(x) > 1927 and get_tile_fid(x) < 2093) or   \
+                                    (get_tile_fid(x) > 2115 and get_tile_fid(x) < 2289) or   \
+                                    (get_tile_fid(x) > 2516 and get_tile_fid(x) < 2529))
 #define tile_is_wood(x)			    ((get_tile_fid(x) > 83 and get_tile_fid(x) < 102) or   \
-									(get_tile_fid(x) > 224 and get_tile_fid(x) < 233) or   \
-									(get_tile_fid(x) > 326 and get_tile_fid(x) < 508) or   \
-									(get_tile_fid(x) > 2290 and get_tile_fid(x) < 2389))
+                                    (get_tile_fid(x) > 224 and get_tile_fid(x) < 233) or   \
+                                    (get_tile_fid(x) > 326 and get_tile_fid(x) < 508) or   \
+                                    (get_tile_fid(x) > 2290 and get_tile_fid(x) < 2389))
 #define tile_is_metal(x)			((get_tile_fid(x) > 101 and get_tile_fid(x) < 117) or   \
-									(get_tile_fid(x) > 222 and get_tile_fid(x) < 225) or   \
-									(get_tile_fid(x) > 232 and get_tile_fid(x) < 236) or   \
-									(get_tile_fid(x) > 274 and get_tile_fid(x) < 327) or   \
-									(get_tile_fid(x) > 1457 and get_tile_fid(x) < 1500) or   \
-									(get_tile_fid(x) > 1826 and get_tile_fid(x) < 1892) or   \
-									(get_tile_fid(x) > 2388 and get_tile_fid(x) < 2400) or   \
-									(get_tile_fid(x) > 2763))
+                                    (get_tile_fid(x) > 222 and get_tile_fid(x) < 225) or   \
+                                    (get_tile_fid(x) > 232 and get_tile_fid(x) < 236) or   \
+                                    (get_tile_fid(x) > 274 and get_tile_fid(x) < 327) or   \
+                                    (get_tile_fid(x) > 1457 and get_tile_fid(x) < 1500) or   \
+                                    (get_tile_fid(x) > 1826 and get_tile_fid(x) < 1892) or   \
+                                    (get_tile_fid(x) > 2388 and get_tile_fid(x) < 2400) or   \
+                                    (get_tile_fid(x) > 2763))
 #define tile_is_dirt(x)				((get_tile_fid(x) > 171 and get_tile_fid(x) < 221) or   \
-									(get_tile_fid(x) > 714 and get_tile_fid(x) < 720) or   \
-									(get_tile_fid(x) > 801 and get_tile_fid(x) < 812) or   \
-									(get_tile_fid(x) > 2092 and get_tile_fid(x) < 2116) or   \
-									(get_tile_fid(x) > 2528 and get_tile_fid(x) < 2548) or   \
-									(get_tile_fid(x) > 1095 and get_tile_fid(x) < 1375) or   \
-									(get_tile_fid(x) > 1395 and get_tile_fid(x) < 1458) or   \
-									(get_tile_fid(x) > 1502 and get_tile_fid(x) < 1611) or   \
-									(get_tile_fid(x) > 1671 and get_tile_fid(x) < 1827))
+                                    (get_tile_fid(x) > 714 and get_tile_fid(x) < 720) or   \
+                                    (get_tile_fid(x) > 801 and get_tile_fid(x) < 812) or   \
+                                    (get_tile_fid(x) > 2092 and get_tile_fid(x) < 2116) or   \
+                                    (get_tile_fid(x) > 2528 and get_tile_fid(x) < 2548) or   \
+                                    (get_tile_fid(x) > 1095 and get_tile_fid(x) < 1375) or   \
+                                    (get_tile_fid(x) > 1395 and get_tile_fid(x) < 1458) or   \
+                                    (get_tile_fid(x) > 1502 and get_tile_fid(x) < 1611) or   \
+                                    (get_tile_fid(x) > 1671 and get_tile_fid(x) < 1827))
 #define tile_is_slime(x)			((get_tile_fid(x) > 1052 and get_tile_fid(x) < 1081))
 #define tile_is_cloth_on_dirt(x)	((get_tile_fid(x) > 1374 and get_tile_fid(x) < 1390) or   \
-									(get_tile_fid(x) > 1620 and get_tile_fid(x) < 1672))
+                                    (get_tile_fid(x) > 1620 and get_tile_fid(x) < 1672))
 #define tile_is_carpet(x)			((get_tile_fid(x) > 1891 and get_tile_fid(x) < 1928))
 #define tile_is_grass(x)			(get_tile_fid(x) > 2288 and get_tile_fid(x) < 2291)
 
@@ -176,14 +197,14 @@
 #define is_melee_attack(type)   (type == ATTACK_MODE_PUNCH or type == ATTACK_MODE_KICK or type == ATTACK_MODE_SWING or type == ATTACK_MODE_THRUST)
 
 #define tile_behind_obj_rng(who, rng)																			\
-		(tile_num_in_direction(tile_num(who),((has_trait(1,who,10) + 3) % 6), rng))
+        (tile_num_in_direction(tile_num(who),((has_trait(1,who,10) + 3) % 6), rng))
 
 #define attacker_behind_target(oA, oT)																			\
-		((tile_distance(tile_num(oA),tile_behind_obj_rng(oT, 2))<=2) and (tile_distance_objs(oA,oT)<=2))
+        ((tile_distance(tile_num(oA),tile_behind_obj_rng(oT, 2))<=2) and (tile_distance_objs(oA,oT)<=2))
 
 /* Sneak Attacks */
 #define is_sneak_attack(attacker, target, type)														\
-	(is_melee_attack(type) and using_skill(attacker,SKILL_SNEAK) and attacker_behind_target(attacker, target))
+    (is_melee_attack(type) and using_skill(attacker,SKILL_SNEAK) and attacker_behind_target(attacker, target))
 //#define can_sneak_attack(x)			(has_skill(x,SKILL_SNEAK)>=50)
 //#define sneak_damage_bonus(x)	
 
@@ -210,6 +231,11 @@
 #define pbs_global(x)                  (get_array(load_array(ARR_PBS_GLOBALS), x))
 #define set_pbs_global(x, val)         (set_array(load_create_array_map(ARR_PBS_GLOBALS), x, val))
 // #define pbs_mod_version             (pbs_var("_version"))
+
+#define INI_COMBAT         "combat.ini"
+#define INI_ECONOMY        "barter.ini"
+#define int_from_ini_file(name, file, section)    ini_##name := get_ini_setting(file "|" section "|" #name)
+#define str_from_ini_file(name, file, section)    ini_##name := get_ini_string(file "|" section "|" #name)
 
 
 #endif
